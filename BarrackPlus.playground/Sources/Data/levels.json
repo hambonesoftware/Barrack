@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "seed": 20251012,
+    "targetPercent": 0.70,
+    "enemies": [
+      {"type": "Bouncer", "count": 2, "speed": [90, 140]}
+    ],
+    "powerupRate": 0.10,
+    "lives": 3
+  },
+  {
+    "id": 2,
+    "seed": 20251013,
+    "targetPercent": 0.75,
+    "enemies": [
+      {"type": "Bouncer", "count": 3, "speed": [100, 160]},
+      {"type": "Drifter", "count": 1, "speed": [50, 80]}
+    ],
+    "powerupRate": 0.12,
+    "lives": 3
+  }
+]
