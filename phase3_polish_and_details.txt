@@ -1,0 +1,8 @@
+
+Phase 3 – Polish and Final Details
+----------------------------------
+- Add background effects or dynamic music using p5.sound
+- Create a score tracker and visual feedback for hits
+- Introduce sound effects for popping, collision, and game over
+- Add fade transitions and “game start / end” splash screens
+- Package final version for testing and sharing via Swift Playgrounds

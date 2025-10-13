@@ -1,0 +1,7 @@
+
+Phase 1 – Setup Environment
+---------------------------
+- Install Swift Playgrounds and ensure JavaScript interop is enabled (via web view or JS injection)
+- Embed p5.js library and verify it runs in a canvas or web view area
+- Display a basic animated shape (e.g., bouncing circle) to confirm p5.js is rendering correctly
+- Set up file/project structure for game assets and code reuse

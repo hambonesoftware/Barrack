@@ -1,0 +1,8 @@
+
+Phase 2 – Core Gameplay Mechanics
+---------------------------------
+- Define player entity and controls (e.g., tap, drag, or arrow keys)
+- Create procedural enemy bubbles with varied shapes/sizes
+- Handle bubble movement, wall bounce, and speed variation
+- Implement collision detection (player vs enemy)
+- Add simple game loop, reset, and basic UI for game over/restart
