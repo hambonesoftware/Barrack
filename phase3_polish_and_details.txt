@@ -1,6 +1,7 @@
 
 Phase 3 – Polish and Final Details
 ----------------------------------
+- Ensure `p5.sound.js` is bundled in the Resources folder and referenced locally (as established in Phase 1) before enabling audio features.
 - Add background effects or dynamic music using p5.sound
 - Create a score tracker and visual feedback for hits
 - Introduce sound effects for popping, collision, and game over

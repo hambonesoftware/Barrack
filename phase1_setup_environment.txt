@@ -2,6 +2,9 @@
 Phase 1 – Setup Environment
 ---------------------------
 - Install Swift Playgrounds and ensure JavaScript interop is enabled (via web view or JS injection)
+- Download the latest `p5.js` and `p5.sound.js` files (for use in later phases) directly from the p5.js release archive and add them to the Swift Playgrounds Resources folder.
+- Update the embedded HTML to reference the local copies of `p5.js` and `p5.sound.js` from the Resources bundle instead of relying on remote CDNs.
 - Embed p5.js library and verify it runs in a canvas or web view area
+- Confirm the WKWebView loads the bundled JavaScript files by checking the JavaScript console for successful load messages or by temporarily disabling network access and ensuring the experience continues to function.
 - Display a basic animated shape (e.g., bouncing circle) to confirm p5.js is rendering correctly
 - Set up file/project structure for game assets and code reuse
