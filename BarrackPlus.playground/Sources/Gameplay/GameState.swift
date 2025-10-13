@@ -5,6 +5,7 @@ public final class GameState: ObservableObject {
     @Published public private(set) var capturedPercent: Double = 0
     @Published public private(set) var lives: Int = 3
     @Published public private(set) var overlayMessage: String?
+    @Published public private(set) var score: Int = 0
 
     public private(set) var currentLevel: Level = Level.demo
     public private(set) var isWin: Bool = false
@@ -12,6 +13,7 @@ public final class GameState: ObservableObject {
 
     public let scene = GameScene(size: CGSize(width: 1024, height: 768))
     private lazy var progressMeter = ProgressMeter(gameState: self)
+    private var lastCapturedPercent: Double = 0
 
     public init() {
         scene.scaleMode = .resizeFill
@@ -22,6 +24,8 @@ public final class GameState: ObservableObject {
         currentLevel = level
         lives = level.lives
         capturedPercent = 0
+        lastCapturedPercent = 0
+        score = 0
         isWin = false
         isLose = false
         overlayMessage = "Capture \(Int(level.targetPercent * 100))%"
@@ -29,7 +33,13 @@ public final class GameState: ObservableObject {
     }
 
     public func reportCapture(count: Int, total: Int) {
-        capturedPercent = progressMeter.capturePercent(capturedCells: count, totalCells: total)
+        let updatedPercent = progressMeter.capturePercent(capturedCells: count, totalCells: total)
+        let delta = max(0, updatedPercent - lastCapturedPercent)
+        if delta > 0 {
+            score += Int((delta * 1000).rounded())
+            lastCapturedPercent = updatedPercent
+        }
+        capturedPercent = updatedPercent
         checkWinLoseConditions()
     }
 
