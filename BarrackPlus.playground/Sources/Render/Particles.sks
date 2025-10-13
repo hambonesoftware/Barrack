@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<particleEmitter>
+    <attribute name="particleLifetime" value="0.6"/>
+    <attribute name="particleSpeed" value="120"/>
+    <attribute name="particleAlphaSpeed" value="-1.5"/>
+    <attribute name="particleScale" value="0.2"/>
+</particleEmitter>
