@@ -1,0 +1,326 @@
+🧠 MASTER PROMPT — Barrack+ (Full Swift Playgrounds Clone Plan)
+
+Role: You are a full-stack game-engineering swarm (architect + gameplay + graphics + QA + build) developing a complete, modernized clone of Barrack / JezzBall called Barrack+.
+Target platform: Swift Playgrounds App (not book).
+Primary framework: SpriteKit + SwiftUI, optional p5.js overlay via WKWebView for reactive procedural backgrounds.
+All art is procedural; no external assets required.
+
+⸻
+
+🎯 Overall Goal
+
+Produce a fully playable, 60 FPS, touch-and-mouse compatible arcade game where the player must seal off ≥ Target Percentage of the map to win each level.
+If the player fails (enemy hits active beam or out of lives), the level restarts.
+Difficulty rises by increasing required %, enemy count/speed, and hazard density.
+
+⸻
+
+🧩 Game Loop Summary
+1.Start → Level Select → Play → Win/Lose → Score/Progress → Next Level / Retry
+2.Win Condition: CapturedArea / TotalArea ≥ targetPct
+3.Lose Conditions:
+•All lives lost (beam hit by enemy).
+•Time expired (if enabled).
+
+⸻
+
+⚙️ Core Systems
+
+SystemResponsibility
+GameStateGlobal finite-state machine for menus, play, pause, win, lose
+GridLogical 2-D occupancy map (cell types: empty, wall, beam, captured)
+BeamManagerPlayer beam growth, fragility, anchoring, break handling
+EnemyManagerPhysics + reflection for all enemy types
+FillDetectorFlood-fill / polygon partition; detects enclosed regions
+ProgressMeterCalculates captured% vs target%, triggers win event
+RendererSpriteKit scene nodes, particles, shaders, screenshake
+OverlayBridge(Optional) p5.js reactive background
+UIManagerSwiftUI menus, HUD, settings, color-blind options
+PersistenceSave progress via AppStorage/UserDefaults
+TestingUnit + snapshot + integration tests
+
+
+⸻
+
+🧠 Win/Lose Logic (explicit)
+
+// called each frame
+func checkWinLoseConditions() {
+    if gameState.capturedPercent >= currentLevel.targetPercent {
+        triggerWin()
+    } else if lives <= 0 {
+        triggerLose()
+    } else if timeRemaining <= 0 && levelHasTimer {
+        triggerLose()
+    }
+}
+
+
+⸻
+
+🧮 Key Algorithms
+
+1. Beam Growth
+•Axis-locked rays extend both directions from seed point until hitting boundary.
+•Beam “anchored” when both ends hit walls.
+•Fragile until anchored; enemy collision during growth → beam shatters + −1 life.
+
+2. Area Fill / Capture
+•After anchoring, mark beam as permanent wall.
+•Run BFS flood-fill from each enemy cell to mark enemy-reachable regions.
+•All unmarked empty cells belong to captured region.
+•Convert those to “captured” state and increment capturedPercent.
+
+3. Enemy Physics
+•Constant-velocity update, reflective collisions on walls.
+•Reflection: v' = v - 2*(v·n)*n (unit n).
+•Deterministic RNG ensures repeatable simulations.
+
+4. Percentage Capture to Win
+
+capturedPercent = Float(capturedCellCount) / Float(totalPlayableCells)
+if capturedPercent >= targetPercent { triggerWin() }
+
+
+⸻
+
+🕹️ Controls
+
+PlatformActionDescription
+iPad (touch/pencil)Tap + Dragstart beam along nearest axis
+MacArrow keys + Spacegrow beam in direction
+AllPause = two-finger tap / Escpause menu
+AllHold Start Longercharge beam → faster fill, higher fragility
+
+
+⸻
+
+🧪 Scoring
+•Base points per % captured.
+•Combo multiplier for consecutive captures without loss.
+•Perfect capture bonus (+10 % score).
+•Power-up pickup = flat bonus.
+
+⸻
+
+🧨 Power-ups
+
+Power-upEffectDuration
+Slow-Mohalve enemy speed3 s
+Shieldone beam hit ignoreduntil hit
+Multi-Seedtwo beams simultaneouslyuntil beam break
+
+⸻
+
+🧬 Enemy Types
+1.Bouncer: classic, constant v, reflect walls.
+2.Ricochet+: accelerates after N bounces.
+3.Splitter: splits into 2 at speed > threshold.
+4.Drifter: random-walk, leaves slowing ink trail.
+
+⸻
+
+🎨 Visual FX / Juice
+•Glow, bloom via SKEffectNode.
+•Particle bursts on capture/fail.
+•Beam trail lines & screen-shake.
+•Optional p5.js overlay: background reacts to combo, fill %, music amplitude.
+
+⸻
+
+🧱 Accessibility
+•Three color-blind palettes (default, tritan, protan).
+•Reduced-motion toggle disables shake/particles.
+•Dynamic Type scaling for HUD labels.
+
+⸻
+
+🧩 Project Structure
+
+BarrackPlus/
+  BarrackPlus.playground/
+    Sources/
+      App/
+        BarrackPlusApp.swift
+        GameView.swift
+        SettingsView.swift
+      Engine/
+        Physics.swift
+        FloodFill.swift
+        RNG.swift
+        GameLoop.swift
+      Gameplay/
+        GameState.swift
+        LevelManager.swift
+        BeamManager.swift
+        EnemyManager.swift
+        PowerupManager.swift
+        ProgressMeter.swift
+      Render/
+        SKSceneMain.swift
+        Effects.swift
+        Shaders.metal
+        Particles.sks
+      OverlayP5/
+        OverlayBridge.swift
+        WebOverlayView.swift
+        WebAssets/
+          p5.html
+          p5.min.js
+          overlay.js
+      Data/
+        levels.json
+        palettes.json
+      Support/
+        Colors.swift
+        Constants.swift
+        Accessibility.swift
+    Tests/
+      PhysicsTests.swift
+      FloodFillTests.swift
+      PercentageTests.swift
+      IntegrationSimTests.swift
+  Agents/
+    Agents.md
+    Phase_00_Planning.md
+    Phase_01_Scaffold.md
+    Phase_02_CoreLoop.md
+    Phase_03_Physics_Fill.md
+    Phase_04_Render_Juice.md
+    Phase_05_Overlay_p5.md
+    Phase_06_UI_Accessibility.md
+    Phase_07_Content_Progression.md
+    Phase_08_Testing_Perf.md
+    Phase_09_Polish_QA.md
+  README.md
+
+
+⸻
+
+📆 Development Phases
+
+PhaseFocusExit Criteria
+00Planning & seed dataRepo layout, levels.json schema ready
+01Playgrounds scaffoldApp runs, blank scene 60 FPS
+02Core loop & inputCan start and anchor beam
+03Physics & fillEnemies bounce; regions fill; captured% updates
+04Rendering & juiceParticles, glow, shakes enabled
+05p5 overlayWKWebView shows reactive background
+06UI & accessibilityMenus, settings, palettes
+07Content & progression20 levels, target% ramps 65→85
+08Testing & perfAll unit/snapshot tests pass
+09Polish & QAPlayable release with README GIFs
+
+
+⸻
+
+🧠 Agent Roles
+
+AgentPrimary Goal
+ArchitectMaintain module boundaries, constants, build flags
+Gameplay DevBeam logic, fill algorithm, enemy AI
+Graphics DevShader FX, particles, overlay bridge
+UI DesignerSwiftUI menus, HUD, accessibility
+QA EngineerTests, determinism, fps metrics
+
+Each phase file (Agents/Phase_XX_*.md) must list:
+•Objectives
+•Risks & Mitigation
+•Tasks by Agent
+•Acceptance Tests (in-game and unit)
+
+⸻
+
+🧾 Example levels.json
+
+[
+  {
+    "id": 1,
+    "seed": 20251012,
+    "targetPercent": 0.70,
+    "enemies": [
+      {"type":"Bouncer","count":2,"speed":[90,140]}
+    ],
+    "powerupRate": 0.10
+  },
+  {
+    "id": 2,
+    "seed": 20251013,
+    "targetPercent": 0.75,
+    "enemies": [
+      {"type":"Bouncer","count":3,"speed":[100,160]},
+      {"type":"Drifter","count":1,"speed":[50,80]}
+    ],
+    "powerupRate": 0.12
+  }
+]
+
+
+⸻
+
+✅ Acceptance Checklist (per level)
+
+TestPass Condition
+Beam anchoringAnchors on both ends, no stuck state
+Enemy bounceReflects correctly, no tunneling
+Flood-fillCaptured region only without enemies
+Win checkCaptured% ≥ target → Level Complete trigger
+Lose checkLives = 0 → Fail screen
+PerfFrame ≤ 16 ms avg on iPad Air
+
+
+⸻
+
+🧰 Build Flags
+
+enum BuildFlags {
+    static let RENDER_P5_OVERLAY = false
+    static let REDUCED_MOTION = false
+    static let DEBUG_HUD = true
+}
+
+
+⸻
+
+🧪 Tests (Examples)
+
+PercentageTests.swift
+
+func testCaptureWinCondition() {
+    var game = GameState(level: demoLevel)
+    game.capturedPercent = 0.84
+    game.level.targetPercent = 0.80
+    game.checkWinLoseConditions()
+    XCTAssertTrue(game.isWin)
+}
+
+
+⸻
+
+📄 README Outline
+1.About Barrack+
+2.Controls (iPad & Mac)
+3.Objective (“Seal off X % to win”)
+4.Settings / Accessibility
+5.Build & Run in Swift Playgrounds
+6.Developer Notes + Phase Checklist
+7.GIF showcases & credits
+
+⸻
+
+🧠 Prompt Instructions to Codex
+
+Codex Instruction Block:
+1.Create the full repo structure above.
+2.Implement Phase 00 → Phase 09 sequentially.
+3.Each phase must commit fully working code before moving on.
+4.Include all Agent files with objectives, tasks, and acceptance criteria.
+5.Implement the win condition as “captured ≥ targetPercent.”
+6.Verify in tests that win condition triggers exactly when threshold met.
+7.Ensure no network dependencies and procedural graphics only.
+8.Deliver final zip containing README, Agents/, and BarrackPlus.playground.
+
+⸻
+
+✅ Copy this entire prompt into ChatGPT Codex.
+It will plan and implement all phases of Barrack+, complete with the “closed-off percentage to win” mechanic, procedural graphics, tests, and colorful effects inside Swift Playgrounds.
