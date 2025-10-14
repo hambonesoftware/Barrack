@@ -17,6 +17,7 @@
 - Use [SwiftLint](https://github.com/realm/SwiftLint) for static checks. Enable rules for explicit `self`, unused code, and cyclomatic complexity warnings.
 - JSON assets must be validated via `jq` or a Swift command-line validation target before check-in.
 - Markdown documentation follows [markdownlint](https://github.com/DavidAnson/markdownlint) rules MD001-MD046. Tables must include header separators and alignments where useful.
+- Python tooling under `tools/` follows the Phase 0 `pyproject.toml`; run `ruff .`, `black --check .`, and `mypy .` during CI and pre-commit to guarantee zero-warning automation.
 
 ## Commit & Branch Strategy
 - Follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g., `feat`, `fix`, `docs`, `chore`). Phase documentation updates use `docs` unless coupled with code scaffolding.

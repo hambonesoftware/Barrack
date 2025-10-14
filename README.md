@@ -25,6 +25,12 @@ Seal off at least the target percentage of each arena by drawing beams that conv
 - Deterministic RNG ensures reliable unit tests and repeatable simulation captures.
 - The `Agents/` directory contains phase-by-phase objectives, risks, and acceptance criteria for the swarm team.
 
+## Phase 0 Developer Bootstrap
+1. Review the architecture, style, and retro UI documentation under `docs/` to understand technology and aesthetic guardrails.
+2. Validate data schemas with the reference payloads in `docs/data/levels.phase0.json` and `docs/data/palettes.phase0.json`.
+3. Demonstrate deterministic behaviour by running `swift tools/rng_spike.swift`; the first two runs must emit identical obstacle and spawn sequences.
+4. Keep automation clean by executing `ruff .`, `black --check .`, and `mypy .` from the repository root before submitting changes.
+
 ## Testing
 Example tests live under `BarrackPlus.playground/Tests/` and cover physics reflection, flood-fill behaviour, level loading, and win condition thresholds. Additional integration and performance automation should be added in later phases.
 

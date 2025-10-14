@@ -45,10 +45,11 @@ Barrack+ is a Swift Playgrounds experience targeting iPad and Mac that blends Sp
 
 ## Backend & Engine Responsibilities
 - **Engine module boundaries**: Split into Beam Logic (handles growth, collision, closed-area detection), Fill Detection (flood-fill/scanline algorithms), RNG Service (seeded PRNG API), and State Snapshotting (records progress for undo/redo/testing).
-- **Data handling**: During development the engine loads `levels.json` and `palettes.json` from the app bundle. Production will migrate to a lightweight synced store (CloudKit with Postgres mirror) to enable live ops without App Store updates.
+- **Data handling**: During development the engine loads `levels.json` and `palettes.json` from the app bundle. Phase 0 ships reference payloads in `docs/data/levels.phase0.json` and `docs/data/palettes.phase0.json` to lock structure before tooling automation. Production will migrate to a lightweight synced store (CloudKit with Postgres mirror) to enable live ops without App Store updates.
 - **Deterministic RNG API (Phase 0 spike)**:
   - Provide a `RNGService` struct with initializer `init(seed: UInt64, stream: RNGStream)` to create deterministic sub-streams per system (level layout, enemy spawn, particle jitter).
   - Expose functions `nextUnit() -> Double`, `nextInt(max:)`, and `shuffle<T>(_:)` to ensure reproducible simulations.
+  - The runnable spike lives in `tools/rng_spike.swift` and prints repeatable obstacle coordinates and spawn orders when executed with `swift tools/rng_spike.swift`.
   - Documented usage for testing: QA can record a seed in `levels.json` to replay mission outcomes exactly.
 - **Beam completion semantics**: A mission completes when the filled area meets or exceeds `targetPercent`. The engine reports `currentPercent` continuously so the HUD can display progress.
 
