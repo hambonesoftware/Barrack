@@ -1,6 +1,0 @@
-
-Barrack Remake Plan (Swift Playgrounds + p5.js)
-===============================================
-Phase 1: Setup environment and test p5.js in Swift Playgrounds
-Phase 2: Implement core gameplay mechanics (player, enemies, collision)
-Phase 3: Add polish, scoring, SFX, and transitions
