@@ -31,6 +31,11 @@
 - **Performance Baselines**: Capture frame time, memory footprint, and determinism metrics in Phase 3 onward. Document thresholds in `perf-baselines.json`.
 - Tests run via `swift test` orchestrated through a future `make test` wrapper once the Makefile is introduced.
 
+### QA Acceptance Checklist Expectations
+- QA engineers own the acceptance matrix in `PHASE0_VERIFICATION.md`, expanding it per phase with explicit mappings to unit, integration, snapshot, and performance checks.
+- Every acceptance item must cite the deterministic seed or dataset powering the verification so reruns stay reproducible.
+- When future phases introduce automated suites, link the command (`swift test`, UI harness) directly in the matrix to signal how reviewers validate the outcome.
+
 ## Documentation Practices
 - Maintain ADR-style notes in `docs/decisions/` (to be created Phase 1) for architectural trade-offs.
 - Update the Architecture and Retro UI specs when major changes occur; include change logs at the bottom of each file.

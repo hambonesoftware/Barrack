@@ -2,9 +2,9 @@
 
 | Acceptance Item | File / Section | Status | Notes |
 | --- | --- | --- | --- |
-| Repository map mirrors agreed phase plan | `docs/Architecture.md` – Phase 0 Goals & System Context; `docs/Styleguide.md` – Repository Conventions | OK | Documents confirm module boundaries, directory expectations, and alignment with Agents roadmap. |
+| Repository map mirrors agreed phase plan | `docs/Architecture.md` – Phase 0 Goals & Module Boundaries; `docs/Styleguide.md` – Repository Conventions | OK | Documents confirm module boundaries, build flags, directory expectations, and alignment with Agents roadmap. |
 | Example level data reviewed with confirmed `targetPercent` semantics | `docs/Architecture.md` – Example Level Data | OK | Provides annotated JSON snippet clarifying `targetPercent` win condition and deterministic seed usage. |
-| Deterministic RNG spike demonstrates repeatable simulation API | `docs/Architecture.md` – Backend & Engine Responsibilities; `tools/rng_spike.swift` | OK | Runnable SplitMix64 spike prints identical outputs for repeated seeds and documents execution instructions. |
+| Deterministic RNG spike demonstrates repeatable simulation API | `docs/Architecture.md` – Deterministic RNG Expectations; `tools/rng_spike.swift` | OK | Runnable SplitMix64 spike prints identical outputs for repeated seeds and documents execution instructions. |
 
 ## Additional Notes
 - Retro UI palette, bevel, and accessibility specifications captured in `docs/Retro-UI-Spec.md` per UI designer responsibilities.

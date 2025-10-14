@@ -39,6 +39,13 @@ Barrack+ channels an OS-8/Apeiron-inspired interface blending chunky bevels, sat
 - Notifications slide from top-right using deterministic easing curves derived from RNG seed to ensure repeatable animation order.
 - Progress radial for beam fill sits center-right with anchor guidelines at 40% and 75% thresholds to telegraph mission goals.
 
+## Menu & HUD Wireframes
+- **Main menu**: Three-column grid with Play, Settings, and Seed Lab cards. Cards adopt the palette bevel rules and include deterministic idle animations keyed from the mission seed preview.
+- **Settings overlay**: Left rail lists toggles (Palette, Reduced Motion, Dynamic Type). Right pane previews changes live using the `monochrome` accessibility palette baseline. Toggle controls snap to the 8 px grid and display seed readouts when determinism features are enabled.
+- **HUD callouts**: Score, Target %, Seed ID, and Lives modules align across the top bar. Each module reserves space for iconography plus text to satisfy the “no color-only cues” requirement.
+- **Pause modal**: Centered 480 px wide panel with Resume, Restart, Settings shortcuts, and an Accessibility summary (current palette, motion state). Panel references the widget geometry and bevel rules listed earlier.
+- **Wireframe archive**: Exported low-fidelity mock-ups will be stored under `docs/wireframes/` in Phase 1; until then, Retro UI spec text acts as canonical guidance for the UI designer and gameplay engineer.
+
 ## Procedural Texture & Dither Guidance
 - Procedural noise uses fixed seed per mission to generate 2-bit dither overlays. Patterns cycle every 8 frames to avoid static shimmer.
 - Employ Bayer matrix dithering for gradient fills (4x4 matrix) tinted using palette secondary/primary mix at 70% intensity.

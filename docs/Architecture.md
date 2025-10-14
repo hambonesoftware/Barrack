@@ -8,6 +8,15 @@ Barrack+ is a Swift Playgrounds experience targeting iPad and Mac that blends Sp
 - Approve the Swift Playgrounds repository layout, Agents documentation, and shared JSON data files (`levels.json`, `palettes.json`).
 - Confirm iPad + Mac delivery targets along with the SpriteKit/SwiftUI hybrid stack and supporting tooling.
 
+## Module Boundaries & Build Flags
+- **Dependency graph**: `App` (SwiftUI shell) depends on `Gameplay` (state machines, beam orchestration) which in turn depends on `Engine` (fill detection, RNG, simulation). `Render` (SpriteKit scenes, particles, shaders) consumes services from both `Gameplay` and `Engine`, while `Support` (diagnostics, persistence, tooling bridges) sits alongside with one-way dependencies into the other modules.
+- **Build flags**:
+  - `BuildFlags.RENDER_P5_OVERLAY` enables the optional WKWebView overlay so designers can iterate on p5.js effects without impacting the deterministic SpriteKit loop.
+  - `BuildFlags.ENABLE_DIAGNOSTICS_SERVER` spins up the lightweight FastAPI harness described for QA automation; disabled in production builds.
+  - `BuildFlags.INSTRUMENT_BEAM_DEBUG` activates overlay geometry, heatmaps, and seed logging for in-development beam tuning.
+- **Shared data packages**: `docs/data/levels.phase0.json` and `docs/data/palettes.phase0.json` are authoritative references until Phase 1 introduces generated bundles. Schema ownership remains with the Engine module.
+- **Glossary & backlog hooks**: Phase 0 documentation owns terminology definition; future scope creep is captured in a `BACKLOG.md` appendix once code scaffolding begins.
+
 ## System Context
 ```
 +-------------------+          Telemetry / Analytics (future)
@@ -52,6 +61,30 @@ Barrack+ is a Swift Playgrounds experience targeting iPad and Mac that blends Sp
   - The runnable spike lives in `tools/rng_spike.swift` and prints repeatable obstacle coordinates and spawn orders when executed with `swift tools/rng_spike.swift`.
   - Documented usage for testing: QA can record a seed in `levels.json` to replay mission outcomes exactly.
 - **Beam completion semantics**: A mission completes when the filled area meets or exceeds `targetPercent`. The engine reports `currentPercent` continuously so the HUD can display progress.
+
+### Beam Growth Algorithm Outline
+1. **Initialization** – Gameplay injects the player intent (axis, origin cell, and seed) into the Beam Logic service. The service acquires a deterministic step duration from the RNG stream assigned to beam propagation.
+2. **Propagation loop** – At each fixed-timestep tick SpriteKit requests the next cell candidate. Beam Logic queries the board occupancy grid and resolves collisions against walls, enemies, and player trail ghosts. Growth stops when the beam head hits an occupied tile or collides with an enemy.
+3. **Closure detection** – When both ends of the beam anchor to solid surfaces, the service emits a closure event tagged with the mission seed, beam identifier, and timestamp for audit logging.
+4. **Failure handling** – Active beams struck by enemies trigger an interruption event that decrements lives, rewinds the beam state, and logs the failure cause for QA reproducibility.
+
+### Fill Detection Workflow
+1. **Region identification** – Upon beam closure the Fill Detection module runs a seeded flood-fill starting from each open cell adjacent to the beam to detect enclosed regions.
+2. **Enemy validation** – Regions containing enemy entities remain unclaimed; others compute their area in grid units and update `currentPercent`.
+3. **Area conversion** – Valid regions are promoted to solid tiles, register particle burst requests with the Render module, and queue HUD updates for SwiftUI.
+4. **Performance safeguards** – Scanline optimization ensures flood-fill stays O(n) with predictable memory usage. Deterministic ordering guarantees consistent replay results.
+
+### Deterministic RNG Expectations
+- **Seed management**: Each mission stores a canonical `seed` and optional `subseeds` for modifiers. Streams (`levelLayout`, `enemySpawn`, `particleJitter`, `beamPropagation`) derive from the base seed via indexed offsets, guaranteeing isolation between systems.
+- **Logging**: All RNG consumers emit seed + stream identifiers into debug traces when `BuildFlags.INSTRUMENT_BEAM_DEBUG` is enabled to support QA reproduction.
+- **Testing**: Unit tests pass explicit seeds and assert both numerical outputs and derived artefacts (e.g., shuffled enemy orders) to avoid hidden randomness.
+- **Tooling**: `tools/rng_spike.swift` doubles as reference output; `tools/ui_audit.py` may ingest the same seeds when validating deterministic texture jitter in later phases.
+
+## Graphics & Shader Concepts
+- **SpriteKit shader strategy**: Employ Metal-based fragment shaders for CRT-inspired bloom, beam glow, and palette cycling. Shaders read mission seeds to synchronize animation offsets.
+- **Particle systems**: Configure deterministic SKEmitterNode templates for capture bursts, enemy hits, and UI confetti. Emitters consume the `particleJitter` RNG stream to align with gameplay determinism.
+- **Asset policy**: All visuals remain procedural. No external bitmap imports are allowed; gradients, textures, and sprites are generated on demand and cached per seed.
+- **Pipeline alignment**: Render module exposes toggles so the QA automation harness can disable high-cost shaders when running performance sweeps without diverging from mission seeds.
 
 ## Example Level Data (Phase 0 Review)
 ```json
