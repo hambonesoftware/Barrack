@@ -1,0 +1,52 @@
+{
+  "version": 0,
+  "notes": "Phase 0 reference payload validating targetPercent semantics and deterministic seeds.",
+  "levels": [
+    {
+      "id": "tutorial-01",
+      "title": "Training Grounds",
+      "targetPercent": 0.75,
+      "seed": 123456789,
+      "board": {
+        "width": 64,
+        "height": 64,
+        "startPosition": [32, 4],
+        "obstacles": [[12, 8], [20, 22]]
+      },
+      "winCondition": {
+        "type": "closedAreaPercentage",
+        "threshold": 0.75,
+        "failureGrace": 0.02
+      },
+      "enemies": [
+        { "type": "orbiter", "count": 2, "speed": 1.0 },
+        { "type": "drifter", "count": 1, "speed": 0.6 }
+      ],
+      "modifiers": ["reduced-speed"],
+      "palette": "aurora"
+    },
+    {
+      "id": "campaign-03",
+      "title": "Citadel Breach",
+      "targetPercent": 0.82,
+      "seed": 987654321,
+      "board": {
+        "width": 96,
+        "height": 72,
+        "startPosition": [16, 8],
+        "obstacles": [[40, 28], [48, 28], [40, 40], [48, 40]]
+      },
+      "winCondition": {
+        "type": "closedAreaPercentage",
+        "threshold": 0.82,
+        "failureGrace": 0.01
+      },
+      "enemies": [
+        { "type": "orbiter", "count": 3, "speed": 1.2 },
+        { "type": "sweeper", "count": 2, "speed": 0.9 }
+      ],
+      "modifiers": ["hazard-spawns", "reduced-lives"],
+      "palette": "citadel"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "version": 0,
+  "notes": "Phase 0 palette spike demonstrating accessibility metadata for retro UI themes.",
+  "palettes": [
+    {
+      "id": "aurora",
+      "usage": ["default", "campaign"],
+      "colors": {
+        "primary": "#34FFD9",
+        "secondary": "#0FD7FF",
+        "accent": "#FF5EBA",
+        "background": "#061427",
+        "alert": "#FFB800"
+      },
+      "accessibility": {
+        "wcagBodyContrast": 5.2,
+        "wcagDisplayContrast": 3.6,
+        "highContrast": false,
+        "reducedMotionRecommended": false
+      }
+    },
+    {
+      "id": "monochrome",
+      "usage": ["accessibility", "QA"],
+      "colors": {
+        "primary": "#F3F4F6",
+        "secondary": "#9CA3AF",
+        "accent": "#10B981",
+        "background": "#111827",
+        "alert": "#EF4444"
+      },
+      "accessibility": {
+        "wcagBodyContrast": 8.1,
+        "wcagDisplayContrast": 5.5,
+        "highContrast": true,
+        "reducedMotionRecommended": true
+      }
+    }
+  ]
+}

@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, List
 
 REFERENCE_IMAGES = [
     Path("references/barrack_menu.png"),
@@ -32,8 +31,8 @@ def luminance(rgb: tuple[float, float, float]) -> float:
 @dataclass
 class ElementReport:
     name: str
-    expected: Dict[str, float]
-    actual: Dict[str, float]
+    expected: dict[str, float]
+    actual: dict[str, float]
     delta_px: float
     bevel_match: bool
     shade_delta_pct: float
@@ -42,7 +41,7 @@ class ElementReport:
     fix: str
 
 
-ELEMENTS: List[ElementReport] = []
+ELEMENTS: list[ElementReport] = []
 
 LAYOUT_REFERENCE = {
     "score": (24, 16, 148, 44),
@@ -56,7 +55,9 @@ LAYOUT_REFERENCE = {
 for name, (ex, ey, width, height) in LAYOUT_REFERENCE.items():
     actual_x, actual_y = ex, ey
     delta = math.dist((ex, ey), (actual_x, actual_y))
-    shade_delta = abs(luminance(PANEL_COLORS["highlight"]) - luminance(PANEL_COLORS["base_bottom"])) * 30
+    highlight_luma = luminance(PANEL_COLORS["highlight"])
+    base_luma = luminance(PANEL_COLORS["base_bottom"])
+    shade_delta = abs(highlight_luma - base_luma) * 30
     notes = "Aligned"
     fix = "hold"
     ELEMENTS.append(
@@ -77,11 +78,12 @@ TABLE_HEADER = (
     "Element\tExpected Pos (ref)\tActual Pos\tΔ px\tBevel Match\tShade Δ (%)\tTexture Match\tNotes"
 )
 
-def format_pos(entry: Dict[str, float]) -> str:
+
+def format_pos(entry: dict[str, float]) -> str:
     return f"({int(entry['x'])},{int(entry['y'])})"
 
 
-def build_table(elements: List[ElementReport]) -> str:
+def build_table(elements: list[ElementReport]) -> str:
     rows = [TABLE_HEADER]
     for element in elements:
         rows.append(
@@ -101,7 +103,7 @@ def build_table(elements: List[ElementReport]) -> str:
     return "\n".join(rows)
 
 
-def build_json(elements: List[ElementReport]) -> Dict[str, object]:
+def build_json(elements: list[ElementReport]) -> dict[str, object]:
     return {
         "elements": [asdict(element) for element in elements],
         "global": {
