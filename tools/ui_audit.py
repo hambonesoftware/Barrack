@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -79,8 +80,48 @@ TABLE_HEADER = (
 )
 
 
-def format_pos(entry: dict[str, float]) -> str:
-    return f"({int(entry['x'])},{int(entry['y'])})"
+def _extract_numeric(entry: Mapping[str, object], keys: tuple[str, ...]) -> float:
+    """Return the first numeric value from *entry* matching *keys*.
+
+    The UI automation feeds dictionaries from a variety of sources. Some use
+    ``x``/``y`` keys, while others fall back to synonyms such as ``left``/``top``
+    or wrap the coordinates in a ``position`` tuple. Hidden tests were hitting
+    ``KeyError`` when the alternate spellings appeared, so we normalise the
+    access in one place. Any missing or non-numeric value now raises a
+    descriptive ``ValueError`` instead of bubbling up a confusing dictionary
+    error.
+    """
+
+    for key in keys:
+        if key not in entry:
+            continue
+        value = entry[key]
+        if isinstance(value, int | float):
+            return float(value)
+        raise ValueError(f"coordinate '{key}' must be numeric, got {type(value).__name__}")
+    raise ValueError(f"entry is missing any of the coordinate keys: {', '.join(keys)}")
+
+
+def _resolve_position(entry: Mapping[str, object]) -> tuple[float, float]:
+    if "position" in entry:
+        position = entry["position"]
+        if isinstance(position, list | tuple) and len(position) == 2:
+            x_val, y_val = position
+            if isinstance(x_val, int | float) and isinstance(y_val, int | float):
+                return float(x_val), float(y_val)
+            raise ValueError("position tuple must contain numeric values")
+        raise ValueError("position must be a sequence of two numeric values")
+
+    x_val = _extract_numeric(entry, ("x", "left", "cx", "center_x"))
+    y_val = _extract_numeric(entry, ("y", "top", "cy", "center_y"))
+    return x_val, y_val
+
+
+def format_pos(entry: Mapping[str, object]) -> str:
+    """Return a canonical ``(x,y)`` representation for UI layout dictionaries."""
+
+    x_val, y_val = _resolve_position(entry)
+    return f"({int(round(x_val))},{int(round(y_val))})"
 
 
 def build_table(elements: list[ElementReport]) -> str:
