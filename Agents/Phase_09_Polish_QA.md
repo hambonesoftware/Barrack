@@ -21,3 +21,10 @@
 - All blocking bugs resolved with QA sign-off documented.
 - README updated with controls, accessibility notes, build instructions, and GIF references.
 - Final playthrough completes entire campaign without crashes or soft locks.
+
+## Browser edition scope update — 2026-10-26
+
+User requested a full GitHub Pages arcade edition. Added independent `web/`
+implementation while preserving Swift sources. Deterministic engine tests and
+predictive 12-sector progression verification are recorded in
+`docs/Web-Verification.md`. Physical iOS device QA remains unverified.
