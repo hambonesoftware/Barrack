@@ -11,32 +11,37 @@ export class Renderer {
     c.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0); c.clearRect(0, 0, W, H);
     c.save();
     if (this.shake > 0 && !this.reduced) { c.translate((Math.random() - .5) * this.shake * 16, (Math.random() - .5) * this.shake * 16); this.shake = Math.max(0, this.shake - dt * 3); }
-    c.fillStyle = '#304639'; c.fillRect(0, 0, W, H);
-    c.strokeStyle = '#c7f68b0a'; c.lineWidth = 1;
+    const metal = c.createLinearGradient(0, 0, W, H);
+    metal.addColorStop(0, '#fff2a1'); metal.addColorStop(.3, '#ffc541'); metal.addColorStop(.48, '#fff5b5'); metal.addColorStop(.5, '#d99012'); metal.addColorStop(.76, '#ffe579'); metal.addColorStop(1, '#fff7b9');
+    c.fillStyle = metal; c.fillRect(0, 0, W, H);
+    c.strokeStyle = '#9b5e0020'; c.lineWidth = 1;
     for (let x = -H; x < W; x += 14) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + H, H); c.stroke(); }
     for (const r of game.regions) {
-      const g = c.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h); g.addColorStop(0, '#172b32'); g.addColorStop(1, '#09151e');
+      const g = c.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h); g.addColorStop(0, '#e2faff'); g.addColorStop(.48, '#b7dcf4'); g.addColorStop(1, '#81b9e2');
       c.fillStyle = g; c.fillRect(r.x, r.y, r.w, r.h);
       c.save(); c.beginPath(); c.rect(r.x, r.y, r.w, r.h); c.clip();
-      c.strokeStyle = '#8ab4bd12'; c.lineWidth = 1;
+      c.strokeStyle = '#2e72ac25'; c.lineWidth = 1;
       for (let x = 0; x < W; x += 32) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
       for (let y = 0; y < H; y += 32) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
-      c.fillStyle = '#acc8c825'; for (let x = 32; x < W; x += 64) for (let y = 32; y < H; y += 64) c.fillRect(x - 1, y - 1, 2, 2);
-      c.restore(); c.strokeStyle = '#83ac9a70'; c.lineWidth = 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+      c.fillStyle = '#ffffffb0'; for (let x = 32; x < W; x += 64) for (let y = 32; y < H; y += 64) c.fillRect(x - 1, y - 1, 2, 2);
+      c.restore(); c.strokeStyle = '#3c7ba4'; c.lineWidth = 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
     }
     for (const r of game.captured) if (r.age < .8 && !this.reduced) {
       c.fillStyle = `rgba(199,246,139,${(1 - r.age / .8) * .4})`; c.fillRect(r.x, r.y, r.w, r.h);
     }
     if (game.slow) { c.fillStyle = '#74deff0c'; c.fillRect(0, 0, W, H); }
     for (const b of game.balls) {
-      const col = TYPES[b.kind].color;
+      const colors = { ember: '#ff7020', heavy: '#9c52ed', watcher: '#39dc71', pulse: '#ff3d94' };
+      const chromeColors = ['#00bfff', '#ff4273', '#ffd72e', '#895aff'];
+      const col = colors[b.kind] || chromeColors[game.balls.indexOf(b) % chromeColors.length];
       if (!this.reduced && game.state === 'playing') { b.trail.push({ x: b.x, y: b.y }); if (b.trail.length > 9) b.trail.shift(); }
       if (!this.reduced) b.trail.forEach((p, i) => { c.globalAlpha = i / 100; c.fillStyle = col; c.beginPath(); c.arc(p.x, p.y, b.r * i / 10, 0, Math.PI * 2); c.fill(); });
       c.globalAlpha = 1;
       c.fillStyle = '#0007'; c.beginPath(); c.ellipse(b.x + 3, b.y + b.r * .7, b.r * 1.1, b.r * .65, 0, 0, Math.PI * 2); c.fill();
       const g = c.createRadialGradient(b.x - b.r * .36, b.y - b.r * .4, b.r * .05, b.x + b.r * .1, b.y + b.r * .1, b.r * 1.15);
-      g.addColorStop(0, '#fff'); g.addColorStop(.18, col); g.addColorStop(.53, col); g.addColorStop(.76, '#384956'); g.addColorStop(.9, '#14232d'); g.addColorStop(1, col);
-      c.fillStyle = g; c.beginPath(); c.arc(b.x, b.y, b.r, 0, Math.PI * 2); c.fill(); c.strokeStyle = col; c.lineWidth = .8; c.stroke();
+      g.addColorStop(0, '#fff'); g.addColorStop(.16, '#fff'); g.addColorStop(.28, col); g.addColorStop(.49, col); g.addColorStop(.53, '#17396c'); g.addColorStop(.7, col); g.addColorStop(.87, '#ecfaff'); g.addColorStop(1, '#244b78');
+      c.fillStyle = g; c.beginPath(); c.arc(b.x, b.y, b.r, 0, Math.PI * 2); c.fill(); c.strokeStyle = col; c.lineWidth = 1.2; c.stroke();
+      c.strokeStyle = '#ffffffb0'; c.lineWidth = 2; c.beginPath(); c.arc(b.x - b.r * .1, b.y - b.r * .08, b.r * .77, Math.PI * 1.1, Math.PI * 1.65); c.stroke();
       if (b.kind === 'heavy') { c.strokeStyle = '#342447'; c.lineWidth = 3; c.beginPath(); c.ellipse(b.x, b.y, b.r - 3, b.r * .36, -.4, 0, Math.PI * 2); c.stroke(); }
       if (b.kind === 'watcher') {
         const angle = Math.atan2(game.aim.y - b.y, game.aim.x - b.x);
@@ -48,8 +53,8 @@ export class Renderer {
       if (b.kind === 'ember') { c.fillStyle = '#633a18'; c.beginPath(); c.moveTo(b.x + 2, b.y - 6); c.lineTo(b.x - 4, b.y + 1); c.lineTo(b.x, b.y + 1); c.lineTo(b.x - 2, b.y + 6); c.lineTo(b.x + 5, b.y - 1); c.lineTo(b.x + 1, b.y - 1); c.fill(); }
     }
     if (game.beam) {
-      const b = game.beam; c.save(); c.shadowColor = game.shield ? '#bfa3ff' : '#c7f68b'; c.shadowBlur = this.reduced ? 0 : 20;
-      c.strokeStyle = game.shield ? '#c5a2ff' : '#c7f68b'; c.lineWidth = 6; c.beginPath(); c.moveTo(b.axis === 'h' ? b.a : b.x, b.axis === 'v' ? b.a : b.y); c.lineTo(b.axis === 'h' ? b.b : b.x, b.axis === 'v' ? b.b : b.y); c.stroke();
+      const b = game.beam; c.save(); c.shadowColor = game.shield ? '#6b24f5' : '#ec227d'; c.shadowBlur = this.reduced ? 0 : 20;
+      c.strokeStyle = game.shield ? '#7a30e5' : '#ec227d'; c.lineWidth = 6; c.beginPath(); c.moveTo(b.axis === 'h' ? b.a : b.x, b.axis === 'v' ? b.a : b.y); c.lineTo(b.axis === 'h' ? b.b : b.x, b.axis === 'v' ? b.b : b.y); c.stroke();
       c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke();
       for (const end of [b.a, b.b]) { const x = b.axis === 'h' ? end : b.x, y = b.axis === 'v' ? end : b.y; c.fillStyle = '#fff'; c.fillRect(x - 5, y - 5, 10, 10); }
       c.restore();
@@ -57,10 +62,10 @@ export class Renderer {
     if (aim && !game.beam && game.state === 'playing') {
       const r = game.regionAt(aim.x, aim.y);
       if (r) {
-        c.save(); c.setLineDash([5, 9]); c.lineWidth = 1; c.strokeStyle = '#c7f68b55'; c.beginPath();
+        c.save(); c.setLineDash([5, 9]); c.lineWidth = 1; c.strokeStyle = '#8b195fac'; c.beginPath();
         c.moveTo(axis === 'h' ? r.x : aim.x, axis === 'v' ? r.y : aim.y); c.lineTo(axis === 'h' ? r.x + r.w : aim.x, axis === 'v' ? r.y + r.h : aim.y); c.stroke(); c.restore();
       }
-      c.save(); c.translate(aim.x, aim.y); if (axis === 'v') c.rotate(Math.PI / 2); c.strokeStyle = r ? '#c7f68b' : '#ff9158'; c.lineWidth = 2;
+      c.save(); c.translate(aim.x, aim.y); if (axis === 'v') c.rotate(Math.PI / 2); c.strokeStyle = r ? '#ec227d' : '#b33e00'; c.lineWidth = 2;
       c.strokeRect(-7, -7, 14, 14); c.beginPath(); c.moveTo(-22, 0); c.lineTo(-12, -5); c.lineTo(-12, 5); c.closePath(); c.moveTo(22, 0); c.lineTo(12, -5); c.lineTo(12, 5); c.closePath(); c.stroke(); c.restore();
     }
     for (const p of this.particles) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .98; p.vy *= .98; c.globalAlpha = Math.max(0, p.life); c.fillStyle = p.color; c.fillRect(p.x, p.y, 3, 3); }

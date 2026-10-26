@@ -25,9 +25,9 @@ function best() { if (!game) return; const key = `${game.mode}:${game.difficulty
 function toast(message) { $('toast').textContent = message; $('toast').classList.add('visible'); toastTime = 2; }
 function event(e) {
   audio.effect(e.type);
-  if (e.type === 'fire') renderer.burst(e.x, e.y, '#c7f68b', 10);
-  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#c7f68b', 28); toast(`+${e.gain.toFixed(1)}% RECLAIMED`); unlock('first'); if (e.gain >= 35) unlock('large'); }
-  if (e.type === 'hit') { renderer.burst(e.x, e.y, '#ff9158', 45); renderer.shake = .7; toast('BARRIER BREACHED · −1 LIFE'); }
+  if (e.type === 'fire') renderer.burst(e.x, e.y, '#f52187', 10);
+  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#f52187', 28); toast(`+${e.gain.toFixed(1)}% RECLAIMED`); unlock('first'); if (e.gain >= 35) unlock('large'); }
+  if (e.type === 'hit') { renderer.burst(e.x, e.y, '#ff6b00', 45); renderer.shake = .7; toast('BARRIER BREACHED · −1 LIFE'); }
   if (e.type === 'shield') { renderer.burst(e.x, e.y, '#c5a2ff'); toast('LIFE PROTECTED · SHIELD USED'); }
   if (e.type === 'invalid') toast('MOVE THE EMITTER CLEAR OF THE BALL');
   if (e.type === 'power') toast({ slow: 'TIME DILATION · 5 SECONDS', shield: 'BEAM INSURANCE ARMED', boost: 'OVERDRIVE · 5 SECONDS' }[e.kind]);
