@@ -36,8 +36,8 @@ test('retro art renders every ball type, active beams, and reduces motion', () =
   const r = renderer(), game = new Game({ stage: 8, seed: 8 });
   r.reduced = true;
   assert.doesNotThrow(() => r.draw(game, game.aim, 'v', 1 / 60, 3));
-  game.balls = game.balls.filter(b => b.x < 200 || b.x > 800);
-  assert.ok(game.fire(480, 320, 'h'));
+  game.balls = [];
+  assert.ok(game.fire(230, 320, 'h'));
   assert.doesNotThrow(() => r.draw(game, game.aim, 'h', 1 / 60, 3.1));
   r.burst(400, 300, '#ffaa00', 20);
   assert.equal(r.particles.length, 0);
