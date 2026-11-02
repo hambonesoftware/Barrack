@@ -165,3 +165,58 @@ body.retro96 .setting select {
   body.retro96 .side-panel { padding: 10px; }
   body.retro96 header, body.retro96 footer { padding-left: 8px; padding-right: 8px; }
 }
+
+/* Original-inspired, inset status instruments live in the right-hand rail. */
+.retro-status { display: none; }
+body.retro96 .retro-status {
+  display: grid; gap: 10px;
+  padding: 9px 8px 18px;
+  margin-bottom: 17px;
+  border-bottom: 3px ridge #80817b;
+}
+body.retro96 .retro-status-logo {
+  color: #f1b45b;
+  font: 900 30px/1 Impact, 'Arial Narrow', sans-serif;
+  letter-spacing: -1px;
+  text-shadow: 1px 1px #f4e0a2, 3px 4px #652419, 5px 6px #000;
+  padding: 3px 0 14px;
+}
+body.retro96 .retro-status-logo span { font-size: 15px; color: #ed6435; }
+body.retro96 .retro-meter {
+  display: grid; grid-template-columns: 1fr;
+  padding: 6px;
+  background: linear-gradient(165deg,#676b66,#1c2121 26%,#4b4e4b 50%,#101314);
+  border: 3px ridge #888b82;
+  box-shadow: inset 0 0 0 1px #090d0e, 0 3px 3px #0009;
+}
+body.retro96 .retro-meter small {
+  display: block;
+  padding: 4px 5px 5px;
+  text-align: center;
+  font: bold 11px 'Courier New', monospace;
+  letter-spacing: 2px; color: #171c1e;
+  text-shadow: 0 1px #babdb7;
+  background: linear-gradient(#cacbc5,#808780 43%,#bdc0ba 48%,#535955);
+  border: 2px ridge #9b9e96;
+}
+body.retro96 .retro-meter strong {
+  margin-top: 6px;
+  padding: 6px 10px 3px;
+  text-align: center;
+  font: bold 27px 'Courier New', monospace;
+  letter-spacing: 3px; color: #f34835;
+  text-shadow: 0 0 10px #fc321bc5, 0 2px #550c0a;
+  background: #060706;
+  border: 3px inset #606764;
+  box-shadow: inset 0 0 10px #000;
+}
+body.retro96 .retro-meter.claim strong {
+  color: #93e668;
+  text-shadow: 0 0 8px #77d94da5;
+}
+@media (min-width: 801px) {
+  body.retro96 .scoreboard { display: none; }
+}
+@media (max-width: 800px) {
+  body.retro96 .retro-status { display: none; }
+}
