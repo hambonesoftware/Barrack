@@ -42,9 +42,9 @@ test('desktop and mobile browsers can launch every mode, tap to fire and switch 
       await page.locator('#arena').waitFor({state:'visible'});
       const box=await page.locator('#arena').boundingBox();
       assert.ok(box && box.width > 160 && box.width <= width,'arena width fits '+name);
-      const x=box.x+box.width*.5,y=box.y+box.height*.5;
-      if(touch) await page.touchscreen.tap(x,y);
-      else await page.mouse.click(x,y);
+      const center = {x:box.width*.5,y:box.height*.5};
+      if(touch) await page.locator('#arena').tap({position:center});
+      else await page.locator('#arena').click({position:center});
       await page.waitForTimeout(250);
       assert.ok(await page.locator('#retroScore').count()===1);
       await page.screenshot({path:join('test-artifacts',name+'-authentic-retro.png'),fullPage:true});
