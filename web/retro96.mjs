@@ -1,6 +1,7 @@
 // Barrack '96 HD: original procedural homage artwork, no third-party game assets.
 // The gameplay engine is shared with Chrome Edition. Everything expensive is cached.
 import { W, H } from './engine.mjs';
+import { drawPickups, drawSpecialBallAccent } from './bonus-art.mjs';
 
 let textures;
 
@@ -71,7 +72,7 @@ function buildTextures() {
   return (textures = { open, captured });
 }
 function ballColor(kind, index) {
-  return ({ standard: '#56bceb', ember: '#e65329', heavy: '#9874df', watcher: '#54daab', pulse: '#f13d8c' })[kind]
+  return ({ chrome: '#56bceb', ember: '#e65329', heavy: '#9874df', watcher: '#54daab', pulse: '#f13d8c', gravity: '#e9b35a', glass: '#92eaff', shard: '#ddfaff', sentry: '#e8bc53', nuke: '#e54a28' })[kind]
     || ['#5bc6e9', '#fd7a3e', '#938eff', '#eb3e8e'][index % 4];
 }
 function drawOrb(c, b, color, t, reduced) {
@@ -168,6 +169,7 @@ export class RetroRenderer {
       }
     }
     if (game.slow) { c.fillStyle = '#5f76ff12'; c.fillRect(0, 0, W, H); }
+    drawPickups(c, game, time, this.reduced);
     const active = game.state === 'playing';
     for (let i = 0; i < game.balls.length; i++) {
       const b = game.balls[i], col = ballColor(b.kind, i);
@@ -185,6 +187,7 @@ export class RetroRenderer {
         c.restore();
       }
       drawOrb(c, b, col, time, this.reduced);
+      drawSpecialBallAccent(c, b, time, this.reduced);
     }
     if (game.beam) {
       const b = game.beam;
