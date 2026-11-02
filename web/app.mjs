@@ -1,15 +1,27 @@
 import { Game, W, H, STAGES, TYPES } from './engine.mjs';
 import { Renderer } from './render.mjs';
+import { RetroRenderer } from './retro96.mjs';
 import { Audio } from './audio.mjs';
 const $ = id => document.getElementById(id);
-const defaults = { sfx: .5, music: .15, reduced: matchMedia('(prefers-reduced-motion: reduce)').matches };
+const defaults = { sfx: .5, music: .15, theme: 'retro96', reduced: matchMedia('(prefers-reduced-motion: reduce)').matches };
 let saved = { best: {}, unlocked: 1, achievements: [], settings: defaults };
 try { const v = JSON.parse(localStorage.getItem('barrack-plus-v1')); if (v && typeof v === 'object') saved = { ...saved, ...v, settings: { ...defaults, ...v.settings } }; } catch {}
 if (!saved.best || typeof saved.best !== 'object') saved.best = {};
 if (!Array.isArray(saved.achievements)) saved.achievements = [];
 saved.unlocked = Math.min(12, Math.max(1, Number(saved.unlocked) || 1));
 const save = () => { try { localStorage.setItem('barrack-plus-v1', JSON.stringify(saved)); } catch {} };
-const audio = new Audio(saved.settings), renderer = new Renderer($('arena')), attractRenderer = new Renderer($('attract'));
+const audio = new Audio(saved.settings);
+let renderer, attractRenderer;
+function setVisualTheme(theme) {
+  saved.settings.theme = theme === 'chrome' ? 'chrome' : 'retro96';
+  const RendererClass = saved.settings.theme === 'retro96' ? RetroRenderer : Renderer;
+  renderer = new RendererClass($('arena'));
+  attractRenderer = new RendererClass($('attract'));
+  document.body.classList.toggle('retro96', saved.settings.theme === 'retro96');
+  document.querySelector('.edition').textContent = saved.settings.theme === 'retro96' ? "'96 HD EDITION" : 'CHROME EDITION';
+  save();
+}
+setVisualTheme(saved.settings.theme);
 let mode = 'enhanced', axis = 'h', game = null, aim = { x: W / 2, y: H / 2 }, last = 0, toastTime = 0, pointer = null, demoTime = 0, hudClock = 0;
 const keys = new Set();
 const records = [ ['first', 'First incision', 'Complete your first barrier.'], ['large', 'A clean sweep', 'Reclaim 35% with a single barrier.'], ['perfect', 'Untouchable', 'Clear a sector without losing a life.'], ['five', 'On a roll', 'Clear five sectors in one run.'], ['score', 'Five figures', 'Score 10,000 points in one run.'], ['campaign', 'Containment complete', 'Finish all 12 campaign sectors.'] ];
@@ -74,7 +86,7 @@ function showEnd(won) {
   modal(`<div class="eyebrow">${won ? 'ALL 12 SECTORS SECURED' : 'RUN COMPLETE'}</div><h2>${won ? 'MASTER OF<br>THE FIELD.' : 'ONE MORE<br>ROUND?'}</h2><p>${won ? 'You contained every sector. Try Expert or see how long you can last in Survival.' : 'Every cut teaches you something. Take that knowledge into the next run.'}</p><div class="result-stats"><div>FINAL SCORE<strong>${pad(game.score)}</strong></div><div>SECTORS CLEARED<strong>${pad(game.clears, 2)}</strong></div></div><button class="primary" id="again">PLAY AGAIN ↗</button><button class="outline" id="menu">MAIN MENU</button>`); $('again').onclick = start; $('menu').onclick = menu;
 }
 function utility(content, setup) { const wasPlaying = game?.state === 'playing'; if (wasPlaying) game.state = 'paused'; modal(content + '<button class="primary" id="done">BACK ↗</button>'); $('done').onclick = () => { closeModal(); if (wasPlaying) resume(); else if (game?.state === 'paused') { game.state = 'playing'; pause(); } }; if (setup) setup(); }
-$('settingsButton').onclick = () => utility(`<div class="eyebrow">MAKE IT YOURS</div><h2>SETTINGS.</h2><label class="setting">Sound effects <input id="sfx" type="range" min="0" max="1" step=".05" value="${saved.settings.sfx}"></label><label class="setting">Arcade soundtrack <input id="music" type="range" min="0" max="1" step=".05" value="${saved.settings.music}"></label><label class="setting">Reduced motion <input id="reduced" type="checkbox" ${saved.settings.reduced ? 'checked' : ''}></label><p>Settings, unlocked sectors, records, and achievements are saved in this browser. Clearing website data resets them.</p>`, () => { for (const key of ['sfx', 'music', 'reduced']) $(key).oninput = () => { saved.settings[key] = key === 'reduced' ? $(key).checked : Number($(key).value); audio.unlock(); save(); }; });
+$('settingsButton').onclick = () => utility(`<div class="eyebrow">MAKE IT YOURS</div><h2>SETTINGS.</h2><label class="setting">Visual edition <select id="visualTheme" aria-label="Visual edition"><option value="retro96" ${saved.settings.theme === 'retro96' ? 'selected' : ''}>Barrack '96 HD · Industrial</option><option value="chrome" ${saved.settings.theme === 'chrome' ? 'selected' : ''}>Chrome Edition · Colorful</option></select></label><label class="setting">Sound effects <input id="sfx" type="range" min="0" max="1" step=".05" value="${saved.settings.sfx}"></label><label class="setting">Arcade soundtrack <input id="music" type="range" min="0" max="1" step=".05" value="${saved.settings.music}"></label><label class="setting">Reduced motion <input id="reduced" type="checkbox" ${saved.settings.reduced ? 'checked' : ''}></label><p>Both themes share gameplay, scores and progress. All settings are saved locally in this browser. Clearing website data resets them.</p>`, () => { $('visualTheme').onchange = () => setVisualTheme($('visualTheme').value); for (const key of ['sfx', 'music', 'reduced']) $(key).oninput = () => { saved.settings[key] = key === 'reduced' ? $(key).checked : Number($(key).value); audio.unlock(); save(); }; });
 $('helpButton').onclick = () => utility('<div class="eyebrow">BRIEFING / THE BASICS</div><h2>DRAW THE LINE.</h2><div class="how-step"><strong>01</strong><p><b>Aim in open territory.</b><br>Tap or click to fire. On touch, drag to position precisely and release to fire.</p></div><div class="how-step"><strong>02</strong><p><b>Pick your direction.</b><br>Use ↔ / ↕ below the field. A barrier grows in both directions. If a ball touches it before completion, you lose a life.</p></div><div class="how-step"><strong>03</strong><p><b>Take back 80%.</b><br>Empty regions fill automatically. Regions containing balls stay open. Separate them, then cut closer.</p></div><p>Keyboard: arrows aim · Enter fires · Space rotates · P / Esc pauses · 1 / 2 / 3 use powers. Powers recharge each sector. Survival adds 30 seconds per clear.</p>');
 $('achievementsButton').onclick = () => utility('<div class="eyebrow">YOUR PERSONAL COLLECTION</div><h2>FIELD RECORDS.</h2>' + records.map(([id, name, detail]) => `<div class="achievement ${saved.achievements.includes(id) ? '' : 'locked'}"><span>${saved.achievements.includes(id) ? '✦' : '◇'}</span><div><b>${name}</b><small>${detail}</small></div></div>`).join(''));
 $('homeLink').onclick = e => { e.preventDefault(); if (game?.state === 'playing') pause(); else if (!game) window.scrollTo({ top: 0, behavior: 'smooth' }); };
