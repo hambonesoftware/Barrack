@@ -1,4 +1,5 @@
 import { W, H, TYPES, inside } from './engine.mjs';
+import { drawPickups, drawSpecialBallAccent } from './bonus-art.mjs';
 export class Renderer {
   constructor(canvas) { this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.particles = []; this.rings = []; this.shake = 0; this.reduced = false; }
   burst(x, y, color, amount = 25) {
@@ -30,8 +31,9 @@ export class Renderer {
       c.fillStyle = `rgba(199,246,139,${(1 - r.age / .8) * .4})`; c.fillRect(r.x, r.y, r.w, r.h);
     }
     if (game.slow) { c.fillStyle = '#74deff0c'; c.fillRect(0, 0, W, H); }
+    drawPickups(c, game, time, this.reduced);
     for (const b of game.balls) {
-      const colors = { ember: '#ff7020', heavy: '#9c52ed', watcher: '#39dc71', pulse: '#ff3d94' };
+      const colors = { ember: '#ff7020', heavy: '#9c52ed', watcher: '#39dc71', pulse: '#ff3d94', gravity: '#d9aa45', glass: '#7ad5f7', shard: '#d9f8ff', sentry: '#f8c959', nuke: '#f54c3b' };
       const chromeColors = ['#00bfff', '#ff4273', '#ffd72e', '#895aff'];
       const col = colors[b.kind] || chromeColors[game.balls.indexOf(b) % chromeColors.length];
       if (!this.reduced && game.state === 'playing') { b.trail.push({ x: b.x, y: b.y }); if (b.trail.length > 9) b.trail.shift(); }
@@ -51,6 +53,7 @@ export class Renderer {
       }
       if (b.kind === 'pulse') { c.strokeStyle = '#ffbdd0'; c.lineWidth = 2; c.beginPath(); c.arc(b.x, b.y, b.r + 4 + (this.reduced ? 0 : Math.sin(time * 3 + b.phase) * 2), 0, Math.PI * 2); c.stroke(); }
       if (b.kind === 'ember') { c.fillStyle = '#633a18'; c.beginPath(); c.moveTo(b.x + 2, b.y - 6); c.lineTo(b.x - 4, b.y + 1); c.lineTo(b.x, b.y + 1); c.lineTo(b.x - 2, b.y + 6); c.lineTo(b.x + 5, b.y - 1); c.lineTo(b.x + 1, b.y - 1); c.fill(); }
+      drawSpecialBallAccent(c, b, time, this.reduced);
     }
     if (game.beam) {
       const b = game.beam; c.save(); c.shadowColor = game.shield ? '#6b24f5' : '#ec227d'; c.shadowBlur = this.reduced ? 0 : 20;
