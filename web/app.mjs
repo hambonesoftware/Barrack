@@ -67,6 +67,7 @@ function refreshStage() {
 function hud() {
   if (!game) return;
   $('score').textContent = pad(game.score); $('lives').textContent = '● '.repeat(game.lives).trim() || '—'; $('lives').setAttribute('aria-label', `${game.lives} lives remaining`);
+  $('retroScore').textContent = pad(game.score); $('retroLevel').textContent = pad(game.stage, 2); $('retroLives').textContent = String(game.lives); $('retroClaim').textContent = game.percent.toFixed(1) + '%';
   $('stageNumber').textContent = game.mode === 'survival' ? `${Math.ceil(game.time)}s` : `${pad(game.stage, 2)}${game.mode === 'enhanced' ? ' / 12' : ''}`;
   $('percent').innerHTML = `${game.percent.toFixed(1)}<span>%</span>`; $('progressFill').style.width = `${game.percent}%`;
   for (const p of ['slow', 'shield', 'boost']) { const active = game[p] > 0; $(`${p}Count`).textContent = active ? p === 'shield' ? 'ON' : `${Math.ceil(game[p])}s` : game.powers[p]; $(`${p}Button`).disabled = game.state !== 'playing' || !game.powers[p] || active; $(`${p}Button`).classList.toggle('on', active); }
