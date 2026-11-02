@@ -44,7 +44,7 @@ export class Game {
       this.regions = [{ x: 0, y: 0, w: 450, h: H, id: this.sequence++ }, { x: 510, y: 0, w: 450, h: H, id: this.sequence++ }];
     }
     this.initialArea = this.regions.reduce((n, r) => n + area(r), 0); this.percent = 0; this.target = 80;
-    const count = this.mode === 'authentic' ? Math.min(14, Math.max(3, carried.length + (stage > 1 ? 1 : 0))) : Math.min(3 + Math.floor((stage - 1) * .65), 11);
+    const count = this.mode === 'authentic' ? Math.min(14, stage === 1 ? 3 : carried.length + 1) : Math.min(3 + Math.floor((stage - 1) * .65), 11);
     const kinds = this.mode === 'classic' ? ['chrome'] : [
       'chrome', ...(stage >= 2 ? ['ember'] : []), ...(stage >= 3 ? ['heavy', 'gravity'] : []),
       ...(stage >= 4 ? ['watcher', 'glass'] : []), ...(stage >= 5 ? ['sentry'] : []),
