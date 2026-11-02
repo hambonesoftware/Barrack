@@ -85,3 +85,13 @@ The browser edition uses original procedural art, sound and code, inspired by
 Barrack and JezzBall. It does not include Ambrosia's original assets, code, music,
 or an exact reproduction of its special-enemy mechanics. The repository's GPL-3.0
 license applies to this edition.
+
+
+### Barrack '96 HD visual edition (2026)
+
+The browser version includes two fully interchangeable themes under **Settings → Visual edition**:
+
+- **Barrack '96 HD · Industrial** is the new default. It uses cached, procedurally generated crimson/black organic field textures, rust-and-metal spiral territory tiles, animated reflective spheres, mechanical emitters, and an industrial steel interface inspired by the 1996 Macintosh Barrack aesthetic.
+- **Chrome Edition · Colorful** preserves the previous bright blue-and-gold arcade artwork without changes to its renderer.
+
+The visual themes change only appearance: gameplay, achievements, scores, saved progress, audio and touch controls stay shared. The HD renderer does not include Ambrosia's original sprites, soundtrack, logo, or other assets. It is an independently generated homage rather than an asset-accurate remaster. Desktop and mobile visual QA is still recommended against original screenshots.

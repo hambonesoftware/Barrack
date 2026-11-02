@@ -1,0 +1,222 @@
+/* Barrack '96 HD — an original industrial tribute, independent of the Chrome theme.
+   No licensed original artwork is embedded or copied. */
+body.retro96 {
+  color-scheme: dark;
+  --bg: #090a0b;
+  --panel: #1d2021;
+  --line: #535451;
+  --text: #e4dccd;
+  --muted: #a4a49e;
+  --mint: #e2aa62;
+  --orange: #fa542d;
+  background:
+    radial-gradient(ellipse at 50% -20%, #57262144, transparent 52%),
+    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 34px),
+    #08090b;
+  color: var(--text);
+}
+body.retro96 .shell {
+  background: linear-gradient(90deg, #0006, transparent 8%, transparent 92%, #0008);
+}
+body.retro96 header, body.retro96 footer {
+  border-color: #565955;
+  background: linear-gradient(#454a4b, #101415 20%, #15181a 77%, #343637);
+  box-shadow: inset 0 2px #989e9270, inset 0 -3px #030404;
+  padding-left: 18px; padding-right: 18px;
+}
+body.retro96 .brand { color: #d8c6a4; text-shadow: 1px 2px 2px #000; }
+body.retro96 .brand-mark {
+  background: linear-gradient(140deg,#ffe7a8,#e89932 35%,#6c2a16 55%,#feae39 78%,#513021);
+  color: #38140a; border: 1px solid #f6c475;
+  box-shadow: inset 0 2px #fff7c7, 2px 4px 0 #0008; transform: skew(-9deg);
+}
+body.retro96 .plus, body.retro96 .eyebrow { color: #f3bc72; }
+body.retro96 .live-dot { background: #f33d27; box-shadow: 0 0 9px #e52616; }
+body.retro96 h1 {
+  color: #efa849;
+  text-shadow: 1px 1px #ffe4a2, 2px 3px #9b421c, 4px 5px #5b231a, 6px 8px #050505;
+}
+body.retro96 h1 em { color: #d44e31; text-shadow: 1px 1px #ffc17e, 3px 4px #762318, 5px 7px #060606; }
+body.retro96 .hero-art {
+  border: 8px solid #454745;
+  border-image: linear-gradient(130deg,#939c99,#222829 18%,#606362 42%,#101213 55%,#858b87 79%,#222726) 1;
+  background: #090404;
+  box-shadow: inset 0 0 0 2px #020303, 0 8px 16px #000;
+}
+body.retro96 .art-tag { color: #ddbd98; text-shadow: 1px 2px #000; }
+body.retro96 .art-tag span { color: #f2a94b; }
+body.retro96 .art-stamp { color: #dfbd86; text-shadow: 0 3px 1px #3d1510, 0 6px 0 #070707; }
+body.retro96 .art-stamp strong { color: #f46a35; }
+body.retro96 .mode-card, body.retro96 .power, body.retro96 .tip {
+  --card-color: #b5804b;
+  border: 2px solid #555956;
+  border-top: 4px solid #aeb0a5;
+  border-bottom: 4px solid #0a0d0e;
+  border-radius: 2px;
+  color: #e8e2d6;
+  background: linear-gradient(135deg, #343839, #111616 54%, #292c2d 55%, #1d2021);
+  box-shadow: inset 2px 2px #747d7866, inset -2px -2px #000c, 0 3px 10px #0007;
+}
+body.retro96 .mode-card[data-mode="classic"] { --card-color: #c36e50; background: linear-gradient(135deg,#48302c,#141313 70%,#282322); }
+body.retro96 .mode-card[data-mode="survival"] { --card-color: #8b9da4; background: linear-gradient(135deg,#31383f,#111617 70%,#252b2b); }
+body.retro96 .mode-card.selected,
+body.retro96 .mode-card[data-mode="classic"].selected,
+body.retro96 .mode-card[data-mode="survival"].selected {
+  background: linear-gradient(145deg, #49392d, #1d1b19 65%, #30251f);
+  outline: 2px solid #f1ba74; outline-offset: 2px;
+}
+body.retro96 .mode-card strong { color: #f5e6c4; }
+body.retro96 .mode-card p, body.retro96 .mode-heading > span { color: #bdbeb6; }
+body.retro96 .pill { background: #a8381f; color: #fff5e2; }
+body.retro96 .primary, body.retro96 .axis-group button.active {
+  color: #230e09;
+  border: 1px solid #6e3720;
+  background: linear-gradient(#fff0b5 0%, #e9a447 40%, #a74d23 52%, #df8b3e 90%, #8f421e);
+  box-shadow: inset 0 2px #ffefd0b0, inset 0 -2px #632511, 1px 3px #050505;
+  text-shadow: 0 1px #ffd18f;
+  border-radius: 2px;
+}
+body.retro96 .outline, body.retro96 select, body.retro96 .icon-btn,
+body.retro96 .axis-group button {
+  border: 2px solid #444b4b;
+  color: #e3ded1;
+  background: linear-gradient(#484f50, #121718 48%, #313638 53%, #202526);
+  box-shadow: inset 0 1px #98a1a167, inset 0 -2px #070808, 0 2px #0007;
+  border-radius: 2px;
+}
+body.retro96 .scoreboard {
+  background: repeating-linear-gradient(90deg,#ffffff08 0 2px,transparent 2px 12px),
+    linear-gradient(#5a5d5a, #151718 27%, #343839 85%, #0a0c0d);
+  border: 3px ridge #7c807a; border-bottom: none;
+  box-shadow: inset 0 2px #b8b8ad44, inset 0 -6px #030505;
+}
+body.retro96 .scoreboard small {
+  font-weight: bold; color: #c2c0b7; letter-spacing: 2px; text-shadow: 1px 2px #060707;
+}
+body.retro96 .scoreboard strong {
+  font-family: 'Courier New', monospace; color: #fb493c;
+  text-shadow: 0 0 8px #f51a0b9e, 0 2px #070707;
+  background: #070606; border: 2px inset #7b7f7a; padding: 4px 10px;
+  display: inline-block; min-width: 85px;
+}
+body.retro96 #lives { color: #ff6840; text-shadow: 0 0 6px #cb3816; }
+body.retro96 .arena-frame {
+  position: relative;
+  border: 12px solid #6f7470;
+  border-image: linear-gradient(140deg,#9ca29b,#202526 18%,#727975 29%,#14191a 51%,#888d86 78%,#272d2c) 1;
+  background: #080505;
+  box-shadow: inset 0 0 0 2px #0b0d0c, 0 8px 26px #000c;
+}
+body.retro96 .arena-frame::after {
+  content: '';
+  position: absolute; inset: 0;
+  border: 2px solid #292e2c;
+  box-shadow: inset 0 0 22px #000;
+  pointer-events: none;
+}
+body.retro96 #arena { background: #110809; }
+body.retro96 #arenaBadge {
+  color: #d1c7a8; background: #101213d9;
+  border: 1px solid #696a5e; text-shadow: 1px 1px #000;
+}
+body.retro96 #toast {
+  color: #f7e6bf; background: #1c1714ef;
+  border: 2px ridge #b17b4b; box-shadow: 0 3px 12px #000;
+}
+body.retro96 .progress-track {
+  background: #07090b; border: 2px inset #77796e;
+  box-shadow: inset 0 2px 6px #000;
+}
+body.retro96 .progress-track > div {
+  background: linear-gradient(90deg,#924620,#e19c3d,#f0d36d);
+  box-shadow: 0 0 8px #e58e36;
+}
+body.retro96 .progress-track i { background: #ff4429; }
+body.retro96 .side-panel {
+  background: repeating-linear-gradient(0deg,#ffffff07 0 2px,transparent 2px 26px),
+    linear-gradient(115deg,#373b3b,#15191a 42%,#303535 67%,#111517);
+  border: 4px ridge #696e6b;
+  box-shadow: inset 0 0 0 2px #060809, 0 7px 17px #0009;
+  padding: 15px;
+}
+body.retro96 .panel-heading { color: #edc18c; text-shadow: 1px 2px #000; }
+body.retro96 .tip { background: linear-gradient(135deg,#403226,#1d1a17); border-color: #70513d; }
+body.retro96 .tip p { color: #e9ccaa; }
+body.retro96 .tip small, body.retro96 .tip > span { color: #c3a480; }
+body.retro96 .power b, body.retro96 .enemy-item b { color: #e8c59a; }
+body.retro96 .power small, body.retro96 .enemy-item small { color: #b5b6ae; }
+body.retro96 .power.on { background: linear-gradient(#69513a,#302319); }
+body.retro96 .power strong { color: #f6ac69; }
+body.retro96 dialog {
+  color: #e5decf;
+  border: 7px ridge #737872; border-radius: 3px;
+  background: linear-gradient(135deg,#414646,#161a1b 45%,#2a2e2f);
+  box-shadow: 0 30px 90px #000c;
+}
+body.retro96 dialog h2 { color: #f0b269; text-shadow: 2px 3px #000; }
+body.retro96 .result-stats > div { background: #070a0ab5; }
+body.retro96 .setting select {
+  max-width: 100%; min-width: 152px; margin-left: 12px;
+}
+@media (max-width: 600px) {
+  body.retro96 .arena-frame { border-width: 7px; }
+  body.retro96 .scoreboard strong { padding: 3px 5px; min-width: 0; font-size: 15px; }
+  body.retro96 .side-panel { padding: 10px; }
+  body.retro96 header, body.retro96 footer { padding-left: 8px; padding-right: 8px; }
+}
+
+/* Original-inspired, inset status instruments live in the right-hand rail. */
+.retro-status { display: none; }
+body.retro96 .retro-status {
+  display: grid; gap: 10px;
+  padding: 9px 8px 18px;
+  margin-bottom: 17px;
+  border-bottom: 3px ridge #80817b;
+}
+body.retro96 .retro-status-logo {
+  color: #f1b45b;
+  font: 900 30px/1 Impact, 'Arial Narrow', sans-serif;
+  letter-spacing: -1px;
+  text-shadow: 1px 1px #f4e0a2, 3px 4px #652419, 5px 6px #000;
+  padding: 3px 0 14px;
+}
+body.retro96 .retro-status-logo span { font-size: 15px; color: #ed6435; }
+body.retro96 .retro-meter {
+  display: grid; grid-template-columns: 1fr;
+  padding: 6px;
+  background: linear-gradient(165deg,#676b66,#1c2121 26%,#4b4e4b 50%,#101314);
+  border: 3px ridge #888b82;
+  box-shadow: inset 0 0 0 1px #090d0e, 0 3px 3px #0009;
+}
+body.retro96 .retro-meter small {
+  display: block;
+  padding: 4px 5px 5px;
+  text-align: center;
+  font: bold 11px 'Courier New', monospace;
+  letter-spacing: 2px; color: #171c1e;
+  text-shadow: 0 1px #babdb7;
+  background: linear-gradient(#cacbc5,#808780 43%,#bdc0ba 48%,#535955);
+  border: 2px ridge #9b9e96;
+}
+body.retro96 .retro-meter strong {
+  margin-top: 6px;
+  padding: 6px 10px 3px;
+  text-align: center;
+  font: bold 27px 'Courier New', monospace;
+  letter-spacing: 3px; color: #f34835;
+  text-shadow: 0 0 10px #fc321bc5, 0 2px #550c0a;
+  background: #060706;
+  border: 3px inset #606764;
+  box-shadow: inset 0 0 10px #000;
+}
+body.retro96 .retro-meter.claim strong {
+  color: #93e668;
+  text-shadow: 0 0 8px #77d94da5;
+}
+@media (min-width: 801px) {
+  body.retro96 .scoreboard { display: none; }
+}
+@media (max-width: 800px) {
+  body.retro96 .retro-status { display: none; }
+}
