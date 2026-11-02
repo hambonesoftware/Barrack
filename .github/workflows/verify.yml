@@ -1,0 +1,22 @@
+name: Verify Barrack graphics changes
+on:
+  pull_request:
+    branches: [main]
+    paths: ['web/**', 'tests/**', '.github/workflows/**']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax-check browser modules
+        run: |
+          node --check web/app.mjs
+          node --check web/render.mjs
+          node --check web/retro96.mjs
+      - name: Run game engine and renderer tests
+        run: node --test tests/engine.test.mjs tests/retro-theme.test.mjs
