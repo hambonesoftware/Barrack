@@ -22,12 +22,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify engine and both rendering editions
+      - name: Verify engine, gameplay balance and both rendering editions
         run: |
           node --check web/app.mjs
           node --check web/render.mjs
           node --check web/retro96.mjs
-          node --test tests/engine.test.mjs tests/retro-theme.test.mjs
+          node --check web/bonus-art.mjs
+          node --test tests/engine.test.mjs tests/retro-theme.test.mjs tests/gameplay-fidelity.test.mjs
+      - name: Install Chromium mobile test runner
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test mobile, tablet and desktop gameplay
+        run: node --test tests/mobile-browser.test.mjs
+      - name: Attach responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: barrack-browser-screenshots
+          path: test-artifacts/*.png
+          if-no-files-found: ignore
       - uses: actions/configure-pages@v5
         with:
           enablement: true

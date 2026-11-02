@@ -14,6 +14,14 @@ export class Audio {
     if (type === 'capture') { this.tone(440, .28, .12, 'sine', 880); this.tone(660, .4, .05, 'triangle', 1320); }
     if (type === 'hit') this.tone(130, .4, .14, 'sawtooth', 28);
     if (type === 'power' || type === 'shield') this.tone(220, .4, .1, 'sine', 1100);
+    if (type === 'spawn') this.tone(620, .17, .045, 'sine', 920);
+    if (type === 'pickup') {
+      this.tone(523.25, .26, .14, 'triangle', 783.99);
+      this.tone(659.25, .32, .09, 'sine', 1046.5);
+      this.tone(783.99, .37, .07, 'triangle', 1318.5);
+    }
+    if (type === 'detonate') { this.tone(190, .55, .2, 'sawtooth', 33); this.tone(92, .78, .1, 'triangle', 28); }
+    if (type === 'shatter') { this.tone(1244, .19, .07, 'square', 310); this.tone(1720, .13, .045, 'sine', 540); }
     if (type === 'clear' || type === 'won') { this.tone(523, .8, .1); this.tone(659, .8, .07); this.tone(784, 1, .08); }
     if (type === 'over') this.tone(240, .8, .1, 'triangle', 45);
   }

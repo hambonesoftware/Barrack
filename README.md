@@ -95,3 +95,8 @@ The browser version includes two fully interchangeable themes under **Settings â
 - **Chrome Edition Â· Colorful** preserves the previous bright blue-and-gold arcade artwork without changes to its renderer.
 
 The visual themes change only appearance: gameplay, achievements, scores, saved progress, audio and touch controls stay shared. The HD renderer does not include Ambrosia's original sprites, soundtrack, logo, or other assets. It is an independently generated homage rather than an asset-accurate remaster. Desktop and mobile visual QA is still recommended against original screenshots.
+
+
+### Gameplay fidelity pass (November 2026)
+
+Arena collectibles now appear during Enhanced, Survival, and the new **Authentic Classic** mode: lightning, laser, magnet, extra lives, score multipliers and nuke charges. Finish a beam through a bonus or capture the empty territory containing it to collect it. New ball behaviors include gravity, glass/shard, sentry and nuke balls. Movement speeds increase progressively by level. Authentic Classic retains surviving balls from round to round and adds one new ball per stage. **It still uses the current twin-beam control system**, not the original perimeter-moving shooter. See [gameplay mechanics and test coverage](docs/Gameplay-Fidelity.md) for details. Both Chrome and '96 HD visual editions remain in Settings.

@@ -1,4 +1,4 @@
-import { Game, W, H, STAGES, TYPES } from './engine.mjs';
+import { Game, W, H, STAGES, TYPES, BONUSES } from './engine.mjs';
 import { Renderer } from './render.mjs';
 import { RetroRenderer } from './retro96.mjs';
 import { Audio } from './audio.mjs';
@@ -23,6 +23,7 @@ function setVisualTheme(theme) {
 }
 setVisualTheme(saved.settings.theme);
 let mode = 'enhanced', axis = 'h', game = null, aim = { x: W / 2, y: H / 2 }, last = 0, toastTime = 0, pointer = null, demoTime = 0, hudClock = 0;
+let pickupOnCurrentBeam = false;
 const keys = new Set();
 const records = [ ['first', 'First incision', 'Complete your first barrier.'], ['large', 'A clean sweep', 'Reclaim 35% with a single barrier.'], ['perfect', 'Untouchable', 'Clear a sector without losing a life.'], ['five', 'On a roll', 'Clear five sectors in one run.'], ['score', 'Five figures', 'Score 10,000 points in one run.'], ['campaign', 'Containment complete', 'Finish all 12 campaign sectors.'] ];
 const pad = (n, width = 6) => Math.floor(n).toString().padStart(width, '0');
@@ -38,7 +39,16 @@ function toast(message) { $('toast').textContent = message; $('toast').classList
 function event(e) {
   audio.effect(e.type);
   if (e.type === 'fire') renderer.burst(e.x, e.y, '#f52187', 10);
-  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#f52187', 28); toast(`+${e.gain.toFixed(1)}% RECLAIMED`); unlock('first'); if (e.gain >= 35) unlock('large'); }
+  if (e.type === 'pickup') {
+    renderer.burst(e.x, e.y, BONUSES[e.kind].color, 35);
+    renderer.rings.push({ x: e.x, y: e.y, life: .5, color: BONUSES[e.kind].color });
+    pickupOnCurrentBeam = true;
+    toast('BONUS COLLECTED · ' + e.label.toUpperCase());
+  }
+  if (e.type === 'spawn') renderer.burst(e.x, e.y, BONUSES[e.kind].color, 8);
+  if (e.type === 'detonate') { renderer.burst(e.x, e.y, '#ff833b', 65); renderer.shake = .5; toast('NUKE DETONATION · ' + e.count + ' BALLS'); }
+  if (e.type === 'shatter') renderer.burst(e.x, e.y, '#c6faff', 20);
+  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#f52187', 28); if (!pickupOnCurrentBeam) toast(`+${e.gain.toFixed(1)}% RECLAIMED`); pickupOnCurrentBeam = false; unlock('first'); if (e.gain >= 35) unlock('large'); }
   if (e.type === 'hit') { renderer.burst(e.x, e.y, '#ff6b00', 45); renderer.shake = .7; toast('BARRIER BREACHED · −1 LIFE'); }
   if (e.type === 'shield') { renderer.burst(e.x, e.y, '#c5a2ff'); toast('LIFE PROTECTED · SHIELD USED'); }
   if (e.type === 'invalid') toast('MOVE THE EMITTER CLEAR OF THE BALL');
@@ -52,16 +62,19 @@ function event(e) {
   if (game && game.score >= 10000) unlock('score');
 }
 function start() {
+  pickupOnCurrentBeam = false;
   closeModal(); audio.unlock(); keys.clear(); game = new Game({ mode, stage: mode === 'enhanced' ? Number($('stageSelect').value) : 1, difficulty: $('difficulty').value, onEvent: event });
   aim = { x: W / 2, y: H / 2 }; game.aim = aim; renderer.particles = []; renderer.rings = [];
   document.body.classList.add('playing'); $('home').hidden = true; $('play').hidden = false; $('arena').focus({ preventScroll: true }); window.scrollTo(0, 0); refreshStage(); hud();
 }
 function refreshStage() {
-  $('modeName').textContent = { enhanced: 'ENHANCED CAMPAIGN', classic: 'CLASSIC ARCADE', survival: 'SURVIVAL / AGAINST THE CLOCK' }[game.mode];
+  $('modeName').textContent = { enhanced: 'ENHANCED CAMPAIGN', classic: 'CLASSIC ARCADE', survival: 'SURVIVAL / AGAINST THE CLOCK', authentic: 'AUTHENTIC CLASSIC / PERSISTENT BALLS' }[game.mode];
   $('sectorName').textContent = `${pad(game.stage, 2)} / ${(STAGES[(game.stage - 1) % STAGES.length]).toUpperCase()}`;
-  $('powerDescription').textContent = game.mode === 'classic' ? 'Classic is pure skill. Tactical powers are disabled.' : 'A little help when the field fights back.';
+  $('powerDescription').textContent = game.mode === 'classic' ? 'Classic keeps tactical powers and pickups disabled.' : game.mode === 'authentic' ? 'Find glowing pickups in the arena. Tactical buttons are disabled; surviving balls return every round.' : 'Collect glowing bonuses in the arena or activate tactical powers.';
   $('enemyList').innerHTML = [...new Set(game.balls.map(b => b.kind))].map(k => `<div class="enemy-item"><span class="orb-swatch" style="--orb:${TYPES[k].color}"></span><div><b>${TYPES[k].label.toUpperCase()}</b><small>${TYPES[k].detail}</small></div></div>`).join('');
   $('timeLabel').textContent = game.mode === 'survival' ? 'TIME LEFT' : 'SECTOR';
+  $('bonusList').innerHTML = Object.entries(BONUSES).map(([kind, spec]) => '<div class="bonus-item"><span class="bonus-icon" style="--bonus:' + spec.color + '">' + spec.glyph + '</span><span><b>' + spec.label + '</b><small>' + spec.detail + '</small></span></div>').join('');
+  $('bonusList').hidden = game.mode === 'classic';
   toast('CONTAIN THE FIELD · RECLAIM 80%');
 }
 function hud() {
@@ -71,6 +84,9 @@ function hud() {
   $('stageNumber').textContent = game.mode === 'survival' ? `${Math.ceil(game.time)}s` : `${pad(game.stage, 2)}${game.mode === 'enhanced' ? ' / 12' : ''}`;
   $('percent').innerHTML = `${game.percent.toFixed(1)}<span>%</span>`; $('progressFill').style.width = `${game.percent}%`;
   for (const p of ['slow', 'shield', 'boost']) { const active = game[p] > 0; $(`${p}Count`).textContent = active ? p === 'shield' ? 'ON' : `${Math.ceil(game[p])}s` : game.powers[p]; $(`${p}Button`).disabled = game.state !== 'playing' || !game.powers[p] || active; $(`${p}Button`).classList.toggle('on', active); }
+  const active = [['haste', 'LIGHTNING'], ['laser', 'LASER'], ['magnet', 'MAGNET'], ['multiplier', '2× SCORE']].filter(([key]) => game[key] > 0);
+  $('bonusHud').textContent = active.map(([key, label]) => label + ' ' + Math.ceil(game[key]) + 's').join(' · ');
+  $('bonusHud').hidden = !active.length;
   $('fireButton').disabled = game.state !== 'playing' || !!game.beam;
 }
 function modal(content) { keys.clear(); pointer = null; $('modalContent').innerHTML = content; if (!$('modal').open) $('modal').showModal(); }
@@ -88,7 +104,7 @@ function showEnd(won) {
 }
 function utility(content, setup) { const wasPlaying = game?.state === 'playing'; if (wasPlaying) game.state = 'paused'; modal(content + '<button class="primary" id="done">BACK ↗</button>'); $('done').onclick = () => { closeModal(); if (wasPlaying) resume(); else if (game?.state === 'paused') { game.state = 'playing'; pause(); } }; if (setup) setup(); }
 $('settingsButton').onclick = () => utility(`<div class="eyebrow">MAKE IT YOURS</div><h2>SETTINGS.</h2><label class="setting">Visual edition <select id="visualTheme" aria-label="Visual edition"><option value="retro96" ${saved.settings.theme === 'retro96' ? 'selected' : ''}>Barrack '96 HD · Industrial</option><option value="chrome" ${saved.settings.theme === 'chrome' ? 'selected' : ''}>Chrome Edition · Colorful</option></select></label><label class="setting">Sound effects <input id="sfx" type="range" min="0" max="1" step=".05" value="${saved.settings.sfx}"></label><label class="setting">Arcade soundtrack <input id="music" type="range" min="0" max="1" step=".05" value="${saved.settings.music}"></label><label class="setting">Reduced motion <input id="reduced" type="checkbox" ${saved.settings.reduced ? 'checked' : ''}></label><p>Both themes share gameplay, scores and progress. All settings are saved locally in this browser. Clearing website data resets them.</p>`, () => { $('visualTheme').onchange = () => setVisualTheme($('visualTheme').value); for (const key of ['sfx', 'music', 'reduced']) $(key).oninput = () => { saved.settings[key] = key === 'reduced' ? $(key).checked : Number($(key).value); audio.unlock(); save(); }; });
-$('helpButton').onclick = () => utility('<div class="eyebrow">BRIEFING / THE BASICS</div><h2>DRAW THE LINE.</h2><div class="how-step"><strong>01</strong><p><b>Aim in open territory.</b><br>Tap or click to fire. On touch, drag to position precisely and release to fire.</p></div><div class="how-step"><strong>02</strong><p><b>Pick your direction.</b><br>Use ↔ / ↕ below the field. A barrier grows in both directions. If a ball touches it before completion, you lose a life.</p></div><div class="how-step"><strong>03</strong><p><b>Take back 80%.</b><br>Empty regions fill automatically. Regions containing balls stay open. Separate them, then cut closer.</p></div><p>Keyboard: arrows aim · Enter fires · Space rotates · P / Esc pauses · 1 / 2 / 3 use powers. Powers recharge each sector. Survival adds 30 seconds per clear.</p>');
+$('helpButton').onclick = () => utility('<div class="eyebrow">BRIEFING / THE BASICS</div><h2>DRAW THE LINE.</h2><div class="how-step"><strong>01</strong><p><b>Aim in open territory.</b><br>Tap or click to fire. On touch, drag to position precisely and release to fire.</p></div><div class="how-step"><strong>02</strong><p><b>Pick your direction.</b><br>Use ↔ / ↕ below the field. A barrier grows in both directions. If a ball touches it before completion, you lose a life.</p></div><div class="how-step"><strong>03</strong><p><b>Take back 80%.</b><br>Empty regions fill automatically. Regions containing balls stay open. Separate them, then cut closer.</p></div><p><b>Bonuses:</b> Capture a bonus in an empty region or draw a completed beam across it. Lightning and laser speed your beam; magnets pull balls toward walls; keys grant lives; multipliers increase score; nukes eliminate nearby hazards.</p><p><b>Authentic Classic:</b> Surviving balls carry into the next level alongside new arrivals. This mode retains the current two-directional beam control system; the original boundary-moving shooter is not yet reproduced.</p><p>Keyboard: arrows aim · Enter fires · Space rotates · P / Esc pauses · 1 / 2 / 3 use tactical powers in Enhanced/Survival. Survival adds 30 seconds per clear.</p>');
 $('achievementsButton').onclick = () => utility('<div class="eyebrow">YOUR PERSONAL COLLECTION</div><h2>FIELD RECORDS.</h2>' + records.map(([id, name, detail]) => `<div class="achievement ${saved.achievements.includes(id) ? '' : 'locked'}"><span>${saved.achievements.includes(id) ? '✦' : '◇'}</span><div><b>${name}</b><small>${detail}</small></div></div>`).join(''));
 $('homeLink').onclick = e => { e.preventDefault(); if (game?.state === 'playing') pause(); else if (!game) window.scrollTo({ top: 0, behavior: 'smooth' }); };
 $('pauseButton').onclick = pause; $('startButton').onclick = start; $('difficulty').onchange = updateHome;
