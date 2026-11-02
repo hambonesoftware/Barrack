@@ -23,6 +23,7 @@ function setVisualTheme(theme) {
 }
 setVisualTheme(saved.settings.theme);
 let mode = 'enhanced', axis = 'h', game = null, aim = { x: W / 2, y: H / 2 }, last = 0, toastTime = 0, pointer = null, demoTime = 0, hudClock = 0;
+let pickupOnCurrentBeam = false;
 const keys = new Set();
 const records = [ ['first', 'First incision', 'Complete your first barrier.'], ['large', 'A clean sweep', 'Reclaim 35% with a single barrier.'], ['perfect', 'Untouchable', 'Clear a sector without losing a life.'], ['five', 'On a roll', 'Clear five sectors in one run.'], ['score', 'Five figures', 'Score 10,000 points in one run.'], ['campaign', 'Containment complete', 'Finish all 12 campaign sectors.'] ];
 const pad = (n, width = 6) => Math.floor(n).toString().padStart(width, '0');
@@ -41,12 +42,13 @@ function event(e) {
   if (e.type === 'pickup') {
     renderer.burst(e.x, e.y, BONUSES[e.kind].color, 35);
     renderer.rings.push({ x: e.x, y: e.y, life: .5, color: BONUSES[e.kind].color });
+    pickupOnCurrentBeam = true;
     toast('BONUS COLLECTED · ' + e.label.toUpperCase());
   }
   if (e.type === 'spawn') renderer.burst(e.x, e.y, BONUSES[e.kind].color, 8);
   if (e.type === 'detonate') { renderer.burst(e.x, e.y, '#ff833b', 65); renderer.shake = .5; toast('NUKE DETONATION · ' + e.count + ' BALLS'); }
   if (e.type === 'shatter') renderer.burst(e.x, e.y, '#c6faff', 20);
-  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#f52187', 28); toast(`+${e.gain.toFixed(1)}% RECLAIMED`); unlock('first'); if (e.gain >= 35) unlock('large'); }
+  if (e.type === 'capture') { renderer.burst(e.x, e.y, '#f52187', 28); if (!pickupOnCurrentBeam) toast(`+${e.gain.toFixed(1)}% RECLAIMED`); pickupOnCurrentBeam = false; unlock('first'); if (e.gain >= 35) unlock('large'); }
   if (e.type === 'hit') { renderer.burst(e.x, e.y, '#ff6b00', 45); renderer.shake = .7; toast('BARRIER BREACHED · −1 LIFE'); }
   if (e.type === 'shield') { renderer.burst(e.x, e.y, '#c5a2ff'); toast('LIFE PROTECTED · SHIELD USED'); }
   if (e.type === 'invalid') toast('MOVE THE EMITTER CLEAR OF THE BALL');
@@ -60,6 +62,7 @@ function event(e) {
   if (game && game.score >= 10000) unlock('score');
 }
 function start() {
+  pickupOnCurrentBeam = false;
   closeModal(); audio.unlock(); keys.clear(); game = new Game({ mode, stage: mode === 'enhanced' ? Number($('stageSelect').value) : 1, difficulty: $('difficulty').value, onEvent: event });
   aim = { x: W / 2, y: H / 2 }; game.aim = aim; renderer.particles = []; renderer.rings = [];
   document.body.classList.add('playing'); $('home').hidden = true; $('play').hidden = false; $('arena').focus({ preventScroll: true }); window.scrollTo(0, 0); refreshStage(); hud();
